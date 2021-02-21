@@ -1,0 +1,12 @@
+# github.com/julienschmidt/httprouter v1.3.0
+## explicit
+github.com/julienschmidt/httprouter
+# github.com/wascript3r/cryptopay v0.0.7
+## explicit
+github.com/wascript3r/cryptopay/pkg/errcode
+github.com/wascript3r/cryptopay/pkg/logger/usecase
+# github.com/wascript3r/gostr v0.0.0-20200222144921-e78b2166c216
+github.com/wascript3r/gostr
+# github.com/wascript3r/httputil v0.0.0-20201106093100-52b0de959f99
+## explicit
+github.com/wascript3r/httputil/json
