@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const ConfigENV = "SCRAPER_CONFIG"
+const ConfigENV = "API_CONFIG"
 
 var (
 	ErrConfigNotProvided = errors.New("config file is not provided")

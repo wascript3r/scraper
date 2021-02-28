@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"syscall"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/julienschmidt/httprouter"
 
 	// Logger
@@ -20,9 +21,26 @@ import (
 	_queryHandler "github.com/wascript3r/scraper/api/pkg/query/delivery/http"
 	_queryRepo "github.com/wascript3r/scraper/api/pkg/query/repository"
 	_queryUcase "github.com/wascript3r/scraper/api/pkg/query/usecase"
+
+	// Location
+	_locationRepo "github.com/wascript3r/scraper/api/pkg/location/repository"
+
+	// Photo
+	_photoRepo "github.com/wascript3r/scraper/api/pkg/photo/repository"
+
+	// Condition
+	_conditionRepo "github.com/wascript3r/scraper/api/pkg/condition/repository"
+
+	// Listing
+	_listingRepo "github.com/wascript3r/scraper/api/pkg/listing/repository"
+	_listingUcase "github.com/wascript3r/scraper/api/pkg/listing/usecase"
+	_listingValidator "github.com/wascript3r/scraper/api/pkg/listing/validator"
 )
 
 const (
+	// Database
+	DatabaseDriver = "mysql"
+
 	AppLoggerPrefix = "[APP]"
 )
 
@@ -73,11 +91,40 @@ func main() {
 	// Startup message
 	logger.Info("... Starting app ...")
 
+	// Database connection
+	dbConn, err := openDatabase(DatabaseDriver, Cfg.Database.MySQL.DSN)
+	if err != nil {
+		fatalError(err)
+	}
+
 	// Query
-	queryRepo := _queryRepo.NewMySQLRepo()
+	queryRepo := _queryRepo.NewMySQLRepo(dbConn)
 	queryUcase := _queryUcase.New(
 		queryRepo,
 		Cfg.Database.MySQL.QueryTimeout.Duration,
+	)
+
+	// Location
+	locationRepo := _locationRepo.NewMySQLRepo(dbConn)
+
+	// Photo
+	photoRepo := _photoRepo.NewMySQLRepo(dbConn)
+
+	// Photo
+	conditionRepo := _conditionRepo.NewMySQLRepo(dbConn)
+
+	// Listing
+	listingRepo := _listingRepo.NewMySQLRepo(dbConn)
+	listingValidator := _listingValidator.New()
+	_ = _listingUcase.New(
+		listingRepo,
+		locationRepo,
+		photoRepo,
+		queryRepo,
+		conditionRepo,
+		Cfg.Database.MySQL.QueryTimeout.Duration,
+
+		listingValidator,
 	)
 
 	// Graceful shutdown
