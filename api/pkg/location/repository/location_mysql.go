@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	insertSQL = "INSERT INTO Location (country, region) VALUES($1, $2)"
-	findSQL   = "SELECT * FROM Location WHERE country = $1 AND region = $2"
+	insertSQL = "INSERT INTO Location (country, region) VALUES (?, ?)"
+	findSQL   = "SELECT * FROM Location WHERE country = ? AND region = ?"
 )
 
 type MySQLRepo struct {
@@ -27,13 +27,18 @@ func (m *MySQLRepo) NewTx(ctx context.Context) (repository.Transaction, error) {
 }
 
 func (m *MySQLRepo) insert(ctx context.Context, q mysql.Querier, ls *domain.Location) error {
-	return q.QueryRowContext(
-		ctx,
-		insertSQL,
+	res, err := q.ExecContext(ctx, insertSQL, ls.Country, ls.Region)
+	if err != nil {
+		return err
+	}
 
-		ls.Country,
-		ls.Region,
-	).Scan(&ls.ID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	ls.ID = int(id)
+	return nil
 }
 
 func (m *MySQLRepo) Insert(ctx context.Context, ls *domain.Location) error {
@@ -78,7 +83,9 @@ func (m *MySQLRepo) FindTx(ctx context.Context, tx repository.Transaction, count
 
 	ls, err := m.find(ctx, sqlTx, country, region)
 	if err != nil {
-		sqlTx.Rollback()
+		if err != domain.ErrNotFound {
+			sqlTx.Rollback()
+		}
 		return nil, err
 	}
 

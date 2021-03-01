@@ -10,6 +10,8 @@ import (
 	"github.com/wascript3r/scraper/api/pkg/location"
 	"github.com/wascript3r/scraper/api/pkg/photo"
 	"github.com/wascript3r/scraper/api/pkg/query"
+	"github.com/wascript3r/scraper/api/pkg/repository"
+	"github.com/wascript3r/scraper/api/pkg/seller"
 )
 
 type Usecase struct {
@@ -18,18 +20,21 @@ type Usecase struct {
 	photoRepo     photo.Repository
 	queryRepo     query.Repository
 	conditionRepo condition.Repository
+	sellerRepo    seller.Repository
 	ctxTimeout    time.Duration
 
 	validate listing.Validate
 }
 
-func New(lr listing.Repository, lcr location.Repository, pr photo.Repository, qr query.Repository, cr condition.Repository, t time.Duration, v listing.Validate) *Usecase {
+func New(lr listing.Repository, lcr location.Repository, pr photo.Repository, qr query.Repository, cr condition.Repository,
+	sr seller.Repository, t time.Duration, v listing.Validate) *Usecase {
 	return &Usecase{
 		listingRepo:   lr,
 		locationRepo:  lcr,
 		photoRepo:     pr,
 		queryRepo:     qr,
 		conditionRepo: cr,
+		sellerRepo:    sr,
 		ctxTimeout:    t,
 
 		validate: v,
@@ -41,7 +46,7 @@ func (u *Usecase) Register(ctx context.Context, req *listing.RegisterReq) error 
 		return listing.InvalidInputError
 	}
 
-	_, err := domain.ToCurrency(req.Currency)
+	curr, err := domain.ToCurrency(req.Currency)
 	if err != nil {
 		return listing.InvalidCurrencyError
 	}
@@ -62,7 +67,7 @@ func (u *Usecase) Register(ctx context.Context, req *listing.RegisterReq) error 
 		return listing.AlreadyExistsError
 	}
 
-	_, err = u.queryRepo.GetTx(ctx, tx, req.SearchQueryID)
+	_, err = u.queryRepo.GetTx(c, tx, req.SearchQueryID)
 	if err != nil {
 		if err == domain.ErrNotFound {
 			return listing.SearchQueryNotFoundError
@@ -70,7 +75,7 @@ func (u *Usecase) Register(ctx context.Context, req *listing.RegisterReq) error 
 		return err
 	}
 
-	_, err = u.conditionRepo.GetTx(ctx, tx, req.Condition)
+	cond, err := u.conditionRepo.GetTx(c, tx, req.Condition)
 	if err != nil {
 		if err == domain.ErrNotFound {
 			return listing.InvalidConditionError
@@ -78,7 +83,93 @@ func (u *Usecase) Register(ctx context.Context, req *listing.RegisterReq) error 
 		return err
 	}
 
-	// for _, p := range.
+	_, err = u.sellerRepo.GetTx(c, tx, req.SellerID)
+	if err != nil {
+		if err != domain.ErrNotFound {
+			return err
+		}
+
+		ss := &domain.Seller{ID: req.SellerID}
+		err = u.sellerRepo.InsertTx(c, tx, ss)
+		if err != nil {
+			return err
+		}
+	}
+
+	meta := &domain.ListingMeta{
+		ID:            req.ID,
+		SellerID:      req.SellerID,
+		Currency:      curr,
+		Title:         req.Title,
+		SearchQueryID: req.SearchQueryID,
+		ConditionID:   cond.ID,
+	}
+
+	err = u.listingRepo.InsertMetaTx(c, tx, meta)
+	if err != nil {
+		return err
+	}
+
+	err = u.insertPhotos(c, tx, meta.ID, req.Photos)
+	if err != nil {
+		return err
+	}
+
+	err = u.insertLocations(c, tx, meta.ID, req.Location, domain.ItemLocationType)
+	if err != nil {
+		return err
+	}
+
+	err = u.insertLocations(c, tx, meta.ID, req.Shipping, domain.ShippingLocationType)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (u *Usecase) insertPhotos(ctx context.Context, tx repository.Transaction, listingID string, photos []string) error {
+	for _, p := range photos {
+		err := u.photoRepo.InsertTx(ctx, tx, &domain.Photo{
+			URL:       p,
+			ListingID: listingID,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (u *Usecase) insertLocations(ctx context.Context, tx repository.Transaction, listingID string, locations []*listing.Location, t domain.LocationType) error {
+	for _, l := range locations {
+		ls, err := u.locationRepo.FindTx(ctx, tx, l.Country, l.Region)
+		if err != nil {
+			if err != domain.ErrNotFound {
+				return err
+			}
+
+			ls = &domain.Location{
+				Country: l.Country,
+				Region:  l.Region,
+			}
+
+			err = u.locationRepo.InsertTx(ctx, tx, ls)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = u.listingRepo.InsertLocationTx(ctx, tx, &domain.ListingLocation{
+			ListingID:  listingID,
+			Type:       t,
+			LocationID: ls.ID,
+		})
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

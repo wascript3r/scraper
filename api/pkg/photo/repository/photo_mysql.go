@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	insertSQL = "INSERT INTO Photos (photoUrl, fkListingId) VALUES($1, $2)"
+	insertSQL = "INSERT INTO Photos (photoUrl, fkListingId) VALUES(?, ?)"
 )
 
 type MySQLRepo struct {
@@ -26,13 +26,18 @@ func (m *MySQLRepo) NewTx(ctx context.Context) (repository.Transaction, error) {
 }
 
 func (m *MySQLRepo) insert(ctx context.Context, q mysql.Querier, ps *domain.Photo) error {
-	return q.QueryRowContext(
-		ctx,
-		insertSQL,
+	res, err := q.ExecContext(ctx, insertSQL, ps.URL, ps.ListingID)
+	if err != nil {
+		return err
+	}
 
-		ps.URL,
-		ps.ListingID,
-	).Scan(&ps.ID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	ps.ID = int(id)
+	return nil
 }
 
 func (m *MySQLRepo) Insert(ctx context.Context, ps *domain.Photo) error {

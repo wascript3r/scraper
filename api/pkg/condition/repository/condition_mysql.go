@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	getSQL = "SELECT * FROM ItemConditions WHERE conditionName = $1"
+	getSQL = "SELECT * FROM ItemConditions WHERE conditionName = ?"
 )
 
 type MySQLRepo struct {
@@ -48,7 +48,9 @@ func (m *MySQLRepo) GetTx(ctx context.Context, tx repository.Transaction, name s
 
 	cs, err := m.get(ctx, sqlTx, name)
 	if err != nil {
-		sqlTx.Rollback()
+		if err != domain.ErrNotFound {
+			sqlTx.Rollback()
+		}
 		return nil, err
 	}
 

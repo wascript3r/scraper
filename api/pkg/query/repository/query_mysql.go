@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	insertSQL = "INSERT INTO SearchRequest (searchUrl, searchExpirityDate, searchName) VALUES($1, $2, $3)"
-	getSQL    = "SELECT * FROM SearchRequest WHERE searchId = $1"
+	insertSQL = "INSERT INTO SearchRequest (searchUrl, searchExpirityDate, searchName) VALUES(?, ?, ?)"
+	getSQL    = "SELECT * FROM SearchRequest WHERE searchId = ?"
 )
 
 type MySQLRepo struct {
@@ -28,14 +28,18 @@ func (m *MySQLRepo) NewTx(ctx context.Context) (repository.Transaction, error) {
 }
 
 func (m *MySQLRepo) insert(ctx context.Context, q mysql.Querier, qs *domain.Query) error {
-	return q.QueryRowContext(
-		ctx,
-		insertSQL,
+	res, err := q.ExecContext(ctx, insertSQL, qs.URL, qs.Expiry, qs.Name)
+	if err != nil {
+		return err
+	}
 
-		qs.URL,
-		qs.Expiry,
-		qs.Name,
-	).Scan(&qs.ID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	qs.ID = int(id)
+	return nil
 }
 
 func (m *MySQLRepo) Insert(ctx context.Context, qs *domain.Query) error {
@@ -80,7 +84,9 @@ func (m *MySQLRepo) GetTx(ctx context.Context, tx repository.Transaction, id int
 
 	qs, err := m.get(ctx, sqlTx, id)
 	if err != nil {
-		sqlTx.Rollback()
+		if err != domain.ErrNotFound {
+			sqlTx.Rollback()
+		}
 		return nil, err
 	}
 

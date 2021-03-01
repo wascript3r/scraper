@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	insertMetaSQL     = "INSERT INTO ListingInformation (sellerId, currencyId, title, searchId, conditionTypeId) VALUES ($1, $2, $3, $4, $5)"
-	insertLocationSQL = "INSERT INTO ListingLocations (fkListingId, locationType, locationId) VALUES ($1, $2, $3)"
-	existsSQL         = "SELECT EXISTS(SELECT 1 FROM ListingInformation WHERE pkListingId = $1)"
+	insertMetaSQL     = "INSERT INTO ListingInformation (pkListingId, sellerId, currencyId, title, searchId, conditionTypeId) VALUES (?, ?, ?, ?, ?, ?)"
+	insertLocationSQL = "INSERT INTO ListingLocations (fkListingId, locationType, locationId) VALUES (?, ?, ?)"
+	existsSQL         = "SELECT EXISTS(SELECT 1 FROM ListingInformation WHERE pkListingId = ?)"
 )
 
 type MySQLRepo struct {
@@ -28,16 +28,8 @@ func (m *MySQLRepo) NewTx(ctx context.Context) (repository.Transaction, error) {
 }
 
 func (m *MySQLRepo) insertMeta(ctx context.Context, q mysql.Querier, ls *domain.ListingMeta) error {
-	return q.QueryRowContext(
-		ctx,
-		insertMetaSQL,
-
-		ls.SellerID,
-		ls.Currency,
-		ls.Title,
-		ls.SearchQueryID,
-		ls.ConditionID,
-	).Scan(&ls.ID)
+	_, err := q.ExecContext(ctx, insertMetaSQL, ls.ID, ls.SellerID, ls.Currency, ls.Title, ls.SearchQueryID, ls.ConditionID)
+	return err
 }
 
 func (m *MySQLRepo) InsertMeta(ctx context.Context, ls *domain.ListingMeta) error {
@@ -60,14 +52,18 @@ func (m *MySQLRepo) InsertMetaTx(ctx context.Context, tx repository.Transaction,
 }
 
 func (m *MySQLRepo) insertLocation(ctx context.Context, q mysql.Querier, ls *domain.ListingLocation) error {
-	return q.QueryRowContext(
-		ctx,
-		insertLocationSQL,
+	res, err := q.ExecContext(ctx, insertLocationSQL, ls.ListingID, ls.Type, ls.LocationID)
+	if err != nil {
+		return err
+	}
 
-		ls.ListingID,
-		ls.Type,
-		ls.LocationID,
-	).Scan(&ls.ID)
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	ls.ID = int(id)
+	return nil
 }
 
 func (m *MySQLRepo) InsertLocation(ctx context.Context, ls *domain.ListingLocation) error {

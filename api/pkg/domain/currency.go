@@ -5,7 +5,7 @@ import "errors"
 type Currency int8
 
 const (
-	USDCurrency Currency = iota
+	USDCurrency Currency = iota + 1
 	EURCurrency
 )
 

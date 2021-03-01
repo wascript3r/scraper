@@ -31,7 +31,11 @@ import (
 	// Condition
 	_conditionRepo "github.com/wascript3r/scraper/api/pkg/condition/repository"
 
+	// Seller
+	_sellerRepo "github.com/wascript3r/scraper/api/pkg/seller/repository"
+
 	// Listing
+	_listingHandler "github.com/wascript3r/scraper/api/pkg/listing/delivery/http"
 	_listingRepo "github.com/wascript3r/scraper/api/pkg/listing/repository"
 	_listingUcase "github.com/wascript3r/scraper/api/pkg/listing/usecase"
 	_listingValidator "github.com/wascript3r/scraper/api/pkg/listing/validator"
@@ -113,15 +117,19 @@ func main() {
 	// Photo
 	conditionRepo := _conditionRepo.NewMySQLRepo(dbConn)
 
+	// Seller
+	sellerRepo := _sellerRepo.NewMySQLRepo(dbConn)
+
 	// Listing
 	listingRepo := _listingRepo.NewMySQLRepo(dbConn)
 	listingValidator := _listingValidator.New()
-	_ = _listingUcase.New(
+	listingUcase := _listingUcase.New(
 		listingRepo,
 		locationRepo,
 		photoRepo,
 		queryRepo,
 		conditionRepo,
+		sellerRepo,
 		Cfg.Database.MySQL.QueryTimeout.Duration,
 
 		listingValidator,
@@ -141,6 +149,7 @@ func main() {
 	}
 
 	_queryHandler.NewHTTPHandler(httpRouter, queryUcase)
+	_listingHandler.NewHTTPHandler(httpRouter, listingUcase)
 
 	httpServer := &http.Server{
 		Addr:    ":" + Cfg.HTTP.Port,

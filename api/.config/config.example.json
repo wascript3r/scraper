@@ -5,7 +5,7 @@
 
     "database": {
         "mysql": {
-            "dsn": "user:secret@tcp(127.0.0.1)/scrapper",
+            "dsn": "user:secret@tcp(127.0.0.1)/scrapper?parseTime=true",
             "queryTimeout": "10s"
         }
     },

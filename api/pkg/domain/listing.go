@@ -18,7 +18,7 @@ type ListingMeta struct {
 
 type ListingLocation struct {
 	ID         int
-	ListingID  int
+	ListingID  string
 	Type       LocationType
 	LocationID int
 }
