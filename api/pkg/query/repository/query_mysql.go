@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/wascript3r/scraper/api/pkg/domain"
 	"github.com/wascript3r/scraper/api/pkg/repository"
@@ -13,6 +12,7 @@ import (
 const (
 	insertSQL = "INSERT INTO SearchRequest (searchUrl, searchExpirityDate, searchName) VALUES(?, ?, ?)"
 	getSQL    = "SELECT * FROM SearchRequest WHERE searchId = ?"
+	getAllSQL = "SELECT * FROM SearchRequest"
 )
 
 type MySQLRepo struct {
@@ -94,24 +94,27 @@ func (m *MySQLRepo) GetTx(ctx context.Context, tx repository.Transaction, id int
 }
 
 func (m *MySQLRepo) GetAll(ctx context.Context) ([]*domain.Query, error) {
-	return []*domain.Query{
-		{
-			ID:     1,
-			URL:    "https://www.ebay.com/sch/i.html?_from=R40&_trksid=p992.m570.l1313&_nkw=bitcoin&_sacat=0",
-			Expiry: time.Now().Add(time.Hour),
-			Name:   "Bitcoin",
-		},
-		{
-			ID:     2,
-			URL:    "https://www.ebay.com/sch/i.html?_from=R40&_trksid=p992.m570.l1313&_nkw=litecoin&_sacat=0",
-			Expiry: time.Now().Add(time.Hour),
-			Name:   "Litecoin",
-		},
-		{
-			ID:     3,
-			URL:    "https://www.ebay.com/sch/i.html?_from=R40&_trksid=p992.m570.l1313&_nkw=dogecoin&_sacat=0",
-			Expiry: time.Now().Add(time.Hour),
-			Name:   "Dogecoin",
-		},
-	}, nil
+	rows, err := m.conn.QueryContext(ctx, getAllSQL)
+	if err != nil {
+		return nil, err
+	}
+
+	var queries []*domain.Query
+	for rows.Next() {
+		qs := &domain.Query{}
+
+		err = rows.Scan(&qs.ID, &qs.URL, &qs.Expiry, &qs.Name)
+		if err != nil {
+			rows.Close()
+			return nil, err
+		}
+
+		queries = append(queries, qs)
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+
+	return queries, nil
 }
