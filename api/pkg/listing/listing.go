@@ -1,5 +1,10 @@
 package listing
 
+type Location struct {
+	Country string `json:"country" validate:"required,lte=100"`
+	Region  string `json:"region" validate:"lte=100"`
+}
+
 type RegisterReq struct {
 	ID            string      `json:"id" validate:"required,lte=100"`
 	SearchQueryID int         `json:"searchQueryID" validate:"required"`
@@ -12,7 +17,10 @@ type RegisterReq struct {
 	Shipping      []*Location `json:"shipping" validate:"required"`
 }
 
-type Location struct {
-	Country string `json:"country" validate:"required,lte=100"`
-	Region  string `json:"region" validate:"lte=100"`
+type ExistsReq struct {
+	ID string `json:"id" validate:"required,lte=100"`
+}
+
+type ExistsRes struct {
+	Exists bool `json:"exists"`
 }

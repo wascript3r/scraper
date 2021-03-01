@@ -17,7 +17,8 @@ type HTTPHandler struct {
 func NewHTTPHandler(r *httprouter.Router, lu listing.Usecase) {
 	handler := &HTTPHandler{lu}
 
-	r.POST("/api/item/register", handler.RegisterItem)
+	r.POST("/api/listing/register", handler.RegisterListing)
+	r.POST("/api/listing/exists", handler.ListingExists)
 }
 
 func serveError(w http.ResponseWriter, err error) {
@@ -35,7 +36,7 @@ func serveError(w http.ResponseWriter, err error) {
 	httpjson.ServeErr(w, code, nil)
 }
 
-func (h *HTTPHandler) RegisterItem(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *HTTPHandler) RegisterListing(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	req := &listing.RegisterReq{}
 
 	err := json.NewDecoder(r.Body).Decode(req)
@@ -51,4 +52,22 @@ func (h *HTTPHandler) RegisterItem(w http.ResponseWriter, r *http.Request, _ htt
 	}
 
 	httpjson.ServeJSON(w, nil)
+}
+
+func (h *HTTPHandler) ListingExists(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	req := &listing.ExistsReq{}
+
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		httpjson.BadRequest(w, nil)
+		return
+	}
+
+	res, err := h.listingUcase.Exists(r.Context(), req)
+	if err != nil {
+		serveError(w, err)
+		return
+	}
+
+	httpjson.ServeJSON(w, res)
 }

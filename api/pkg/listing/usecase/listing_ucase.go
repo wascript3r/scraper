@@ -173,3 +173,21 @@ func (u *Usecase) insertLocations(ctx context.Context, tx repository.Transaction
 
 	return nil
 }
+
+func (u *Usecase) Exists(ctx context.Context, req *listing.ExistsReq) (*listing.ExistsRes, error) {
+	if err := u.validate.RawRequest(req); err != nil {
+		return nil, listing.InvalidInputError
+	}
+
+	c, cancel := context.WithTimeout(ctx, u.ctxTimeout)
+	defer cancel()
+
+	exists, err := u.listingRepo.Exists(c, req.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &listing.ExistsRes{
+		Exists: exists,
+	}, nil
+}
