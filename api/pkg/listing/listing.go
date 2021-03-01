@@ -12,7 +12,7 @@ type RegisterReq struct {
 	Currency      string      `json:"currency" validate:"required,lte=50"`
 	Condition     string      `json:"condition" validate:"required,lte=50"`
 	SellerID      string      `json:"sellerID" validate:"required,lte=100"`
-	Photos        []string    `json:"photos" validate:"dive,url,lte=255"`
+	Photos        []string    `json:"photos" validate:"required,dive,url,lte=255"`
 	Location      []*Location `json:"location" validate:"required,dive"`
 	Shipping      []*Location `json:"shipping" validate:"required,dive"`
 }
