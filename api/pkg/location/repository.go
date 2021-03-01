@@ -13,6 +13,6 @@ type Repository interface {
 	Insert(ctx context.Context, ls *domain.Location) error
 	InsertTx(ctx context.Context, tx repository.Transaction, ls *domain.Location) error
 
-	Find(ctx context.Context, country, region string) (*domain.Location, error)
-	FindTx(ctx context.Context, tx repository.Transaction, country, region string) (*domain.Location, error)
+	Find(ctx context.Context, country string, region *string) (*domain.Location, error)
+	FindTx(ctx context.Context, tx repository.Transaction, country string, region *string) (*domain.Location, error)
 }

@@ -1,8 +1,8 @@
 package listing
 
 type Location struct {
-	Country string `json:"country" validate:"required,lte=100"`
-	Region  string `json:"region" validate:"lte=100"`
+	Country string  `json:"country" validate:"required,lte=100"`
+	Region  *string `json:"region" validate:"omitempty,gt=0,lte=100"`
 }
 
 type RegisterReq struct {
@@ -13,8 +13,8 @@ type RegisterReq struct {
 	Condition     string      `json:"condition" validate:"required,lte=50"`
 	SellerID      string      `json:"sellerID" validate:"required,lte=100"`
 	Photos        []string    `json:"photos" validate:"dive,url,lte=255"`
-	Location      []*Location `json:"location" validate:"required"`
-	Shipping      []*Location `json:"shipping" validate:"required"`
+	Location      []*Location `json:"location" validate:"required,dive"`
+	Shipping      []*Location `json:"shipping" validate:"required,dive"`
 }
 
 type ExistsReq struct {

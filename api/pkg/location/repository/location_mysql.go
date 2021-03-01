@@ -60,7 +60,7 @@ func (m *MySQLRepo) InsertTx(ctx context.Context, tx repository.Transaction, ls 
 	return nil
 }
 
-func (m *MySQLRepo) find(ctx context.Context, q mysql.Querier, country, region string) (*domain.Location, error) {
+func (m *MySQLRepo) find(ctx context.Context, q mysql.Querier, country string, region *string) (*domain.Location, error) {
 	ls := &domain.Location{}
 
 	err := q.QueryRowContext(ctx, findSQL, country, region).Scan(&ls.ID, &ls.Country, &ls.Region)
@@ -71,11 +71,11 @@ func (m *MySQLRepo) find(ctx context.Context, q mysql.Querier, country, region s
 	return ls, nil
 }
 
-func (m *MySQLRepo) Find(ctx context.Context, country, region string) (*domain.Location, error) {
+func (m *MySQLRepo) Find(ctx context.Context, country string, region *string) (*domain.Location, error) {
 	return m.find(ctx, m.conn, country, region)
 }
 
-func (m *MySQLRepo) FindTx(ctx context.Context, tx repository.Transaction, country, region string) (*domain.Location, error) {
+func (m *MySQLRepo) FindTx(ctx context.Context, tx repository.Transaction, country string, region *string) (*domain.Location, error) {
 	sqlTx, ok := tx.(*sql.Tx)
 	if !ok {
 		return nil, repository.ErrTxMismatch
