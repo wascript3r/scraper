@@ -142,6 +142,8 @@ func main() {
 
 	// HTTP server
 	httpRouter := httprouter.New()
+	httpRouter.MethodNotAllowed = MethodNotAllowedHnd
+	httpRouter.NotFound = NotFoundHnd
 
 	if Cfg.HTTP.EnablePprof {
 		// pprof
