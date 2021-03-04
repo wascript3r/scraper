@@ -1,0 +1,30 @@
+# github.com/go-playground/locales v0.13.0
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.17.0
+github.com/go-playground/universal-translator
+# github.com/go-playground/validator/v10 v10.4.1
+## explicit
+github.com/go-playground/validator/v10
+# github.com/go-sql-driver/mysql v1.5.0
+## explicit
+github.com/go-sql-driver/mysql
+# github.com/julienschmidt/httprouter v1.3.0
+## explicit
+github.com/julienschmidt/httprouter
+# github.com/leodido/go-urn v1.2.0
+github.com/leodido/go-urn
+# github.com/wascript3r/cryptopay v0.0.7
+## explicit
+github.com/wascript3r/cryptopay/pkg/errcode
+github.com/wascript3r/cryptopay/pkg/logger/usecase
+# github.com/wascript3r/gostr v0.0.0-20200222144921-e78b2166c216
+github.com/wascript3r/gostr
+# github.com/wascript3r/httputil v0.0.0-20201106093100-52b0de959f99
+## explicit
+github.com/wascript3r/httputil/json
+# golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
+golang.org/x/crypto/sha3
+# golang.org/x/sys v0.0.0-20190412213103-97732733099d
+golang.org/x/sys/cpu
+golang.org/x/sys/unix

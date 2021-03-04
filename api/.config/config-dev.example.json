@@ -1,0 +1,17 @@
+{
+    "log": {
+        "showTimestamp": true
+    },
+
+    "database": {
+        "mysql": {
+            "dsn": "user:secret@tcp(127.0.0.1)/scrapper?parseTime=true",
+            "queryTimeout": "10s"
+        }
+    },
+
+    "http": {
+        "port": "3000",
+        "enablePprof": true
+    }
+}
