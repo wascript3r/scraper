@@ -3,7 +3,7 @@ package domain
 type LocationType int8
 
 const (
-	ItemLocationType LocationType = iota
+	ItemLocationType LocationType = iota + 1
 	ShippingLocationType
 )
 
