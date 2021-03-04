@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	insertSQL = "INSERT INTO Location (country, region) VALUES (?, ?)"
-	findSQL   = "SELECT * FROM Location WHERE country = ? AND region = ?"
+	insertSQL      = "INSERT INTO Location (country, region) VALUES (?, ?)"
+	findNotNullSQL = "SELECT * FROM Location WHERE country = ? AND region = ?"
+	findNullSQL    = "SELECT * FROM Location WHERE country = ? AND region IS NULL"
 )
 
 type MySQLRepo struct {
@@ -61,9 +62,15 @@ func (m *MySQLRepo) InsertTx(ctx context.Context, tx repository.Transaction, ls 
 }
 
 func (m *MySQLRepo) find(ctx context.Context, q mysql.Querier, country string, region *string) (*domain.Location, error) {
+	var err error
 	ls := &domain.Location{}
 
-	err := q.QueryRowContext(ctx, findSQL, country, region).Scan(&ls.ID, &ls.Country, &ls.Region)
+	if region == nil {
+		err = q.QueryRowContext(ctx, findNullSQL, country).Scan(&ls.ID, &ls.Country, &ls.Region)
+	} else {
+		err = q.QueryRowContext(ctx, findNotNullSQL, country, region).Scan(&ls.ID, &ls.Country, &ls.Region)
+	}
+
 	if err != nil {
 		return nil, mysql.ParseSQLError(err)
 	}
