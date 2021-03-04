@@ -1,0 +1,7 @@
+.body-container{
+    display: flex;
+}
+
+.body-container .itemInformation-container {
+    margin-left: 5px;
+}

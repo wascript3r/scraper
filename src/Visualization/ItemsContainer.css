@@ -1,0 +1,7 @@
+.items-container{
+    display: flex;
+    height: 1080px;
+    width: 20%;
+    background-color: bisque;
+    border: 1px solid black;
+}
