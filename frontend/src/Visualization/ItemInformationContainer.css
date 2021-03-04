@@ -1,0 +1,7 @@
+.itemInformation-container{
+    display: flex;
+    height: 1080px;
+    width: 79.5%;
+    background-color:cadetblue;
+    border: 1px solid black;
+}
