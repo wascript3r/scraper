@@ -39,6 +39,10 @@ import (
 	_listingRepo "github.com/wascript3r/scraper/api/pkg/listing/repository"
 	_listingUcase "github.com/wascript3r/scraper/api/pkg/listing/usecase"
 	_listingValidator "github.com/wascript3r/scraper/api/pkg/listing/validator"
+
+	// Auth
+	_authMid "github.com/wascript3r/scraper/api/pkg/auth/delivery/http/middleware"
+	_authUcase "github.com/wascript3r/scraper/api/pkg/auth/usecase"
 )
 
 const (
@@ -153,9 +157,12 @@ func main() {
 	_queryHandler.NewHTTPHandler(httpRouter, queryUcase)
 	_listingHandler.NewHTTPHandler(httpRouter, listingUcase)
 
+	authUcase := _authUcase.New(Cfg.HTTP.Auth.BearerToken)
+	authMid := _authMid.NewHTTPMiddleware(httpRouter, authUcase)
+
 	httpServer := &http.Server{
 		Addr:    ":" + Cfg.HTTP.Port,
-		Handler: httpRouter,
+		Handler: authMid,
 	}
 
 	// Graceful shutdown

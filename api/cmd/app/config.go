@@ -26,8 +26,11 @@ type Config struct {
 	} `json:"database"`
 
 	HTTP struct {
-		Port        string `json:"port"`
-		EnablePprof bool   `json:"enablePprof"`
+		Port string `json:"port"`
+		Auth struct {
+			BearerToken string `json:"bearerToken"`
+		} `json:"auth"`
+		EnablePprof bool `json:"enablePprof"`
 	} `json:"http"`
 }
 
