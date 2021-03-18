@@ -12,6 +12,9 @@
 
     "http": {
         "port": "3000",
+        "auth": {
+            "bearerToken": "secret"
+        },
         "enablePprof": true
     }
 }

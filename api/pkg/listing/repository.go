@@ -16,6 +16,9 @@ type Repository interface {
 	InsertLocation(ctx context.Context, ls *domain.ListingLocation) error
 	InsertLocationTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingLocation) error
 
+	InsertHistory(ctx context.Context, ls *domain.ListingHistory) error
+	InsertHistoryTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingHistory) error
+
 	Exists(ctx context.Context, id string) (bool, error)
 	ExistsTx(ctx context.Context, tx repository.Transaction, id string) (bool, error)
 }

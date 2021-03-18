@@ -12,6 +12,7 @@ import (
 const (
 	insertMetaSQL     = "INSERT INTO ListingInformation (pkListingId, sellerId, currencyId, title, searchId, conditionTypeId) VALUES (?, ?, ?, ?, ?, ?)"
 	insertLocationSQL = "INSERT INTO ListingLocations (fkListingId, locationType, locationId) VALUES (?, ?, ?)"
+	insertHistorySQL  = "INSERT INTO ListingHistory (fkListingId, listingPrice, remainingQuantity, dateOfParsing) VALUES (?, ?, ?, ?)"
 	existsSQL         = "SELECT EXISTS(SELECT 1 FROM ListingInformation WHERE pkListingId = ?)"
 )
 
@@ -77,6 +78,40 @@ func (m *MySQLRepo) InsertLocationTx(ctx context.Context, tx repository.Transact
 	}
 
 	err := m.insertLocation(ctx, sqlTx, ls)
+	if err != nil {
+		sqlTx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+func (m *MySQLRepo) insertHistory(ctx context.Context, q mysql.Querier, ls *domain.ListingHistory) error {
+	res, err := q.ExecContext(ctx, insertHistorySQL, ls.ListingID, ls.Price, ls.RemainingQuantity, ls.ParsedDate)
+	if err != nil {
+		return err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	ls.ID = int(id)
+	return nil
+}
+
+func (m *MySQLRepo) InsertHistory(ctx context.Context, ls *domain.ListingHistory) error {
+	return m.insertHistory(ctx, m.conn, ls)
+}
+
+func (m *MySQLRepo) InsertHistoryTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingHistory) error {
+	sqlTx, ok := tx.(*sql.Tx)
+	if !ok {
+		return repository.ErrTxMismatch
+	}
+
+	err := m.insertHistory(ctx, sqlTx, ls)
 	if err != nil {
 		sqlTx.Rollback()
 		return err

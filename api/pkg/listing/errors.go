@@ -31,4 +31,14 @@ var (
 		"invalid_condition",
 		errors.New("invalid condition"),
 	)
+
+	CannotParseDateError = errcode.New(
+		"cannot_parse_date",
+		errors.New("cannot parse date"),
+	)
+
+	ListingNotFoundError = errcode.New(
+		"listing_not_found",
+		errors.New("listing not found"),
+	)
 )

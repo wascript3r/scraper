@@ -14,6 +14,10 @@ import (
 	"github.com/wascript3r/scraper/api/pkg/seller"
 )
 
+const (
+	DateTimeFormat = "2006-01-02 15:04:05"
+)
+
 type Usecase struct {
 	listingRepo   listing.Repository
 	locationRepo  location.Repository
@@ -172,6 +176,37 @@ func (u *Usecase) insertLocations(ctx context.Context, tx repository.Transaction
 	}
 
 	return nil
+}
+
+func (u *Usecase) AddHistory(ctx context.Context, req *listing.AddHistoryReq) error {
+	if err := u.validate.RawRequest(req); err != nil {
+		return listing.InvalidInputError
+	}
+
+	date, err := time.Parse(DateTimeFormat, req.ParsedDate)
+	if err != nil {
+		return listing.CannotParseDateError
+	}
+
+	c, cancel := context.WithTimeout(ctx, u.ctxTimeout)
+	defer cancel()
+
+	exists, err := u.listingRepo.Exists(c, req.ListingID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return listing.ListingNotFoundError
+	}
+
+	history := &domain.ListingHistory{
+		ListingID:         req.ListingID,
+		Price:             req.Price,
+		RemainingQuantity: req.RemainingQuantity,
+		ParsedDate:        date,
+	}
+
+	return u.listingRepo.InsertHistory(c, history)
 }
 
 func (u *Usecase) Exists(ctx context.Context, req *listing.ExistsReq) (*listing.ExistsRes, error) {

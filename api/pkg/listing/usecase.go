@@ -4,5 +4,6 @@ import "context"
 
 type Usecase interface {
 	Register(ctx context.Context, req *RegisterReq) error
+	AddHistory(ctx context.Context, req *AddHistoryReq) error
 	Exists(ctx context.Context, req *ExistsReq) (*ExistsRes, error)
 }
