@@ -19,6 +19,7 @@ func NewHTTPHandler(r *httprouter.Router, lu listing.Usecase) {
 
 	r.POST("/api/listing/register", handler.RegisterListing)
 	r.POST("/api/listing/history/add", handler.AddListingHistory)
+	r.POST("/api/listing/soldHistory/add", handler.AddListingSoldHistory)
 	r.POST("/api/listing/exists", handler.ListingExists)
 }
 
@@ -65,6 +66,24 @@ func (h *HTTPHandler) AddListingHistory(w http.ResponseWriter, r *http.Request, 
 	}
 
 	err = h.listingUcase.AddHistory(r.Context(), req)
+	if err != nil {
+		serveError(w, err)
+		return
+	}
+
+	httpjson.ServeJSON(w, nil)
+}
+
+func (h *HTTPHandler) AddListingSoldHistory(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	req := &listing.AddSoldHistoryReq{}
+
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+		httpjson.BadRequest(w, nil)
+		return
+	}
+
+	err = h.listingUcase.AddSoldHistory(r.Context(), req)
 	if err != nil {
 		serveError(w, err)
 		return

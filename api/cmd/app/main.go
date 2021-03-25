@@ -36,6 +36,7 @@ import (
 
 	// Listing
 	_listingHandler "github.com/wascript3r/scraper/api/pkg/listing/delivery/http"
+	_listingHasher "github.com/wascript3r/scraper/api/pkg/listing/hasher"
 	_listingRepo "github.com/wascript3r/scraper/api/pkg/listing/repository"
 	_listingUcase "github.com/wascript3r/scraper/api/pkg/listing/usecase"
 	_listingValidator "github.com/wascript3r/scraper/api/pkg/listing/validator"
@@ -126,7 +127,8 @@ func main() {
 
 	// Listing
 	listingRepo := _listingRepo.NewMySQLRepo(dbConn)
-	listingValidator := _listingValidator.New()
+	listingHasher := _listingHasher.New()
+	listingValidator := _listingValidator.New(Cfg.Listing.DateTimeFormat)
 	listingUcase := _listingUcase.New(
 		listingRepo,
 		locationRepo,
@@ -136,6 +138,7 @@ func main() {
 		sellerRepo,
 		Cfg.Database.MySQL.QueryTimeout.Duration,
 
+		listingHasher,
 		listingValidator,
 	)
 

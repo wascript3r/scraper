@@ -16,5 +16,9 @@
             "bearerToken": "secret"
         },
         "enablePprof": false
+    },
+
+    "listing": {
+        "dateTimeFormat": "2006-01-02 15:04:05"
     }
 }

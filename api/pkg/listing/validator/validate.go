@@ -3,14 +3,23 @@ package validator
 import "github.com/go-playground/validator/v10"
 
 type Validate struct {
-	govalidate *validator.Validate
+	dateTimeFormat string
+	govalidate     *validator.Validate
 }
 
-func New() *Validate {
+func New(dateTimeFormat string) *Validate {
 	goV := validator.New()
-	return &Validate{goV}
+
+	r := newRules(dateTimeFormat)
+	r.attachTo(goV)
+
+	return &Validate{dateTimeFormat, goV}
 }
 
 func (v *Validate) RawRequest(s interface{}) error {
 	return v.govalidate.Struct(s)
+}
+
+func (v *Validate) GetDateTimeFormat() string {
+	return v.dateTimeFormat
 }

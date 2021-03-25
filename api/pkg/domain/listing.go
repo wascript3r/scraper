@@ -32,3 +32,11 @@ type ListingHistory struct {
 	RemainingQuantity int
 	ParsedDate        time.Time
 }
+
+type ListingSoldHistory struct {
+	IDHash        string
+	ListingID     string
+	Price         float64
+	Quantity      int
+	PurchasedDate time.Time
+}

@@ -3,20 +3,30 @@ package mysql
 import (
 	"database/sql"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/wascript3r/scraper/api/pkg/domain"
 )
 
-type ErrCode string
+type ErrCode uint16
 
 const (
-	UniqueViolationErrCode ErrCode = "23505"
-	CheckViolationErrCode  ErrCode = "23514"
+	DuplicateEntryErrCode ErrCode = 1062
 )
 
 func ParseSQLError(err error) error {
 	switch err {
 	case sql.ErrNoRows:
 		return domain.ErrNotFound
+	}
+	return err
+}
+
+func ParseMySQLError(err error) error {
+	if e, ok := err.(*mysql.MySQLError); ok {
+		switch ErrCode(e.Number) {
+		case DuplicateEntryErrCode:
+			return domain.ErrExists
+		}
 	}
 	return err
 }

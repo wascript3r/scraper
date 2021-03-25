@@ -14,10 +14,6 @@ import (
 	"github.com/wascript3r/scraper/api/pkg/seller"
 )
 
-const (
-	DateTimeFormat = "2006-01-02 15:04:05"
-)
-
 type Usecase struct {
 	listingRepo   listing.Repository
 	locationRepo  location.Repository
@@ -27,11 +23,12 @@ type Usecase struct {
 	sellerRepo    seller.Repository
 	ctxTimeout    time.Duration
 
+	hasher   listing.Hasher
 	validate listing.Validate
 }
 
 func New(lr listing.Repository, lcr location.Repository, pr photo.Repository, qr query.Repository, cr condition.Repository,
-	sr seller.Repository, t time.Duration, v listing.Validate) *Usecase {
+	sr seller.Repository, t time.Duration, h listing.Hasher, v listing.Validate) *Usecase {
 	return &Usecase{
 		listingRepo:   lr,
 		locationRepo:  lcr,
@@ -41,6 +38,7 @@ func New(lr listing.Repository, lcr location.Repository, pr photo.Repository, qr
 		sellerRepo:    sr,
 		ctxTimeout:    t,
 
+		hasher:   h,
 		validate: v,
 	}
 }
@@ -183,7 +181,7 @@ func (u *Usecase) AddHistory(ctx context.Context, req *listing.AddHistoryReq) er
 		return listing.InvalidInputError
 	}
 
-	date, err := time.Parse(DateTimeFormat, req.ParsedDate)
+	date, err := time.Parse(u.validate.GetDateTimeFormat(), req.ParsedDate)
 	if err != nil {
 		return listing.CannotParseDateError
 	}
@@ -207,6 +205,50 @@ func (u *Usecase) AddHistory(ctx context.Context, req *listing.AddHistoryReq) er
 	}
 
 	return u.listingRepo.InsertHistory(c, history)
+}
+
+func (u *Usecase) AddSoldHistory(ctx context.Context, req *listing.AddSoldHistoryReq) error {
+	if err := u.validate.RawRequest(req); err != nil {
+		return listing.InvalidInputError
+	}
+
+	c, cancel := context.WithTimeout(ctx, u.ctxTimeout)
+	defer cancel()
+
+	exists, err := u.listingRepo.Exists(c, req.ListingID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return listing.ListingNotFoundError
+	}
+
+	tx, err := u.listingRepo.NewTx(c)
+	if err != nil {
+		return err
+	}
+
+	for _, h := range req.History {
+		date, err := time.Parse(u.validate.GetDateTimeFormat(), h.Date)
+		if err != nil {
+			return listing.CannotParseDateError
+		}
+
+		history := &domain.ListingSoldHistory{
+			IDHash:        u.hasher.HashSoldRecord(h),
+			ListingID:     req.ListingID,
+			Price:         h.Price,
+			Quantity:      h.Quantity,
+			PurchasedDate: date,
+		}
+
+		err = u.listingRepo.InsertSoldHistoryTx(c, tx, history)
+		if err != nil && err != domain.ErrExists {
+			return err
+		}
+	}
+
+	return tx.Commit()
 }
 
 func (u *Usecase) Exists(ctx context.Context, req *listing.ExistsReq) (*listing.ExistsRes, error) {
