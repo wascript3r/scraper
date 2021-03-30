@@ -16,11 +16,11 @@ func New(qr query.Repository, t time.Duration) *Usecase {
 	return &Usecase{qr, t}
 }
 
-func (u *Usecase) GetAll(ctx context.Context) (*query.GetAllRes, error) {
+func (u *Usecase) GetActive(ctx context.Context) (*query.GetAllRes, error) {
 	c, cancel := context.WithTimeout(ctx, u.ctxTimeout)
 	defer cancel()
 
-	qs, err := u.queryRepo.GetAll(c)
+	qs, err := u.queryRepo.GetActive(c)
 	if err != nil {
 		return nil, err
 	}

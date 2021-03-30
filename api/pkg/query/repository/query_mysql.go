@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	insertSQL = "INSERT INTO SearchRequest (searchUrl, searchExpirityDate, searchName) VALUES(?, ?, ?)"
-	getSQL    = "SELECT * FROM SearchRequest WHERE searchId = ?"
-	getAllSQL = "SELECT * FROM SearchRequest"
+	insertSQL    = "INSERT INTO SearchRequest (searchUrl, searchExpirityDate, searchName) VALUES(?, ?, ?)"
+	getSQL       = "SELECT * FROM SearchRequest WHERE searchId = ?"
+	getActiveSQL = "SELECT * FROM SearchRequest WHERE searchExpirityDate > NOW()"
 )
 
 type MySQLRepo struct {
@@ -93,8 +93,8 @@ func (m *MySQLRepo) GetTx(ctx context.Context, tx repository.Transaction, id int
 	return qs, nil
 }
 
-func (m *MySQLRepo) GetAll(ctx context.Context) ([]*domain.Query, error) {
-	rows, err := m.conn.QueryContext(ctx, getAllSQL)
+func (m *MySQLRepo) GetActive(ctx context.Context) ([]*domain.Query, error) {
+	rows, err := m.conn.QueryContext(ctx, getActiveSQL)
 	if err != nil {
 		return nil, err
 	}
