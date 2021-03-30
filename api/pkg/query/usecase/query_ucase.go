@@ -28,8 +28,9 @@ func (u *Usecase) GetActive(ctx context.Context) (*query.GetAllRes, error) {
 	queries := make([]*query.QueryRes, len(qs))
 	for i, q := range qs {
 		queries[i] = &query.QueryRes{
-			ID:  q.ID,
-			URL: q.URL,
+			ID:   q.ID,
+			Name: q.Name,
+			URL:  q.URL,
 		}
 	}
 
