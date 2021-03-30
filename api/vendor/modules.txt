@@ -18,6 +18,10 @@ github.com/leodido/go-urn
 ## explicit
 github.com/wascript3r/cryptopay/pkg/errcode
 github.com/wascript3r/cryptopay/pkg/logger/usecase
+# github.com/wascript3r/gocipher v0.0.0-20201105141458-6510a149f009
+## explicit
+github.com/wascript3r/gocipher/encoder
+github.com/wascript3r/gocipher/sha256
 # github.com/wascript3r/gostr v0.0.0-20200222144921-e78b2166c216
 github.com/wascript3r/gostr
 # github.com/wascript3r/httputil v0.0.0-20201106093100-52b0de959f99

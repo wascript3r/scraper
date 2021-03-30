@@ -48,6 +48,7 @@ github.com/wascript3r/cryptopay v0.0.7 h1:OaaOAIZyHobj42fdks4hoBe4tFuIyUj0hEucNd
 github.com/wascript3r/cryptopay v0.0.7/go.mod h1:6LtYjbjw3Rvo7zvF3fTsa1B7xCqpu9JD1CV/DJjKNco=
 github.com/wascript3r/gobtc v0.0.0-20200625214116-853e8b121c1a/go.mod h1:7iwLrsjUx74T15tciLXCz7nnxMdFgk56dnnDzaL9dqI=
 github.com/wascript3r/gocipher v0.0.0-20200310121545-1457439bede1/go.mod h1:D/22EYptj116AbeDINLz5yGMykjhpmjrwn67PCohRnA=
+github.com/wascript3r/gocipher v0.0.0-20201105141458-6510a149f009 h1:3XgM3mmCGVv6a0sY+IWkGBRZ6kbpID4zxZbjKgF1rs8=
 github.com/wascript3r/gocipher v0.0.0-20201105141458-6510a149f009/go.mod h1:WwV/zbfmTgVBS8lPTTWjFP1vhRk2gfHNtNyXxPWJ9zg=
 github.com/wascript3r/gopool v0.0.0-20200227213539-8fa9e794e69d/go.mod h1:Ja/yZy95QgEFsYk8X5fCFc3YMHuJRTLrP7P83qytdWU=
 github.com/wascript3r/goretry v0.0.0-20200701213336-d69f512bec4f/go.mod h1:4dbuRp5QAJqxhX8tVLS7+dLU/gBL7rCvFalCgj7OHPY=

@@ -19,6 +19,9 @@ type Repository interface {
 	InsertHistory(ctx context.Context, ls *domain.ListingHistory) error
 	InsertHistoryTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingHistory) error
 
+	InsertSoldHistory(ctx context.Context, ls *domain.ListingSoldHistory) error
+	InsertSoldHistoryTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingSoldHistory) error
+
 	Exists(ctx context.Context, id string) (bool, error)
 	ExistsTx(ctx context.Context, tx repository.Transaction, id string) (bool, error)
 }

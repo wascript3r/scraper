@@ -10,10 +10,11 @@ import (
 )
 
 const (
-	insertMetaSQL     = "INSERT INTO ListingInformation (pkListingId, sellerId, currencyId, title, searchId, conditionTypeId) VALUES (?, ?, ?, ?, ?, ?)"
-	insertLocationSQL = "INSERT INTO ListingLocations (fkListingId, locationType, locationId) VALUES (?, ?, ?)"
-	insertHistorySQL  = "INSERT INTO ListingHistory (fkListingId, listingPrice, remainingQuantity, dateOfParsing) VALUES (?, ?, ?, ?)"
-	existsSQL         = "SELECT EXISTS(SELECT 1 FROM ListingInformation WHERE pkListingId = ?)"
+	insertMetaSQL        = "INSERT INTO ListingInformation (pkListingId, sellerId, currencyId, title, searchId, conditionTypeId) VALUES (?, ?, ?, ?, ?, ?)"
+	insertLocationSQL    = "INSERT INTO ListingLocations (fkListingId, locationType, locationId) VALUES (?, ?, ?)"
+	insertHistorySQL     = "INSERT INTO ListingHistory (fkListingId, listingPrice, remainingQuantity, dateOfParsing) VALUES (?, ?, ?, ?)"
+	insertSoldHistorySQL = "INSERT INTO ItemSoldHistory (buyerHashId, fkListingId, soldPrice, quantity, dateOfPurchase) VALUES (?, ?, ?, ?, ?)"
+	existsSQL            = "SELECT EXISTS(SELECT 1 FROM ListingInformation WHERE pkListingId = ?)"
 )
 
 type MySQLRepo struct {
@@ -114,6 +115,32 @@ func (m *MySQLRepo) InsertHistoryTx(ctx context.Context, tx repository.Transacti
 	err := m.insertHistory(ctx, sqlTx, ls)
 	if err != nil {
 		sqlTx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+func (m *MySQLRepo) insertSoldHistory(ctx context.Context, q mysql.Querier, ls *domain.ListingSoldHistory) error {
+	_, err := q.ExecContext(ctx, insertSoldHistorySQL, ls.IDHash, ls.ListingID, ls.Price, ls.Quantity, ls.PurchasedDate)
+	return mysql.ParseMySQLError(err)
+}
+
+func (m *MySQLRepo) InsertSoldHistory(ctx context.Context, ls *domain.ListingSoldHistory) error {
+	return m.insertSoldHistory(ctx, m.conn, ls)
+}
+
+func (m *MySQLRepo) InsertSoldHistoryTx(ctx context.Context, tx repository.Transaction, ls *domain.ListingSoldHistory) error {
+	sqlTx, ok := tx.(*sql.Tx)
+	if !ok {
+		return repository.ErrTxMismatch
+	}
+
+	err := m.insertSoldHistory(ctx, sqlTx, ls)
+	if err != nil {
+		if err != domain.ErrExists {
+			sqlTx.Rollback()
+		}
 		return err
 	}
 

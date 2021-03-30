@@ -16,5 +16,5 @@ type Repository interface {
 	Get(ctx context.Context, id int) (*domain.Query, error)
 	GetTx(ctx context.Context, tx repository.Transaction, id int) (*domain.Query, error)
 
-	GetAll(ctx context.Context) ([]*domain.Query, error)
+	GetActive(ctx context.Context) ([]*domain.Query, error)
 }

@@ -19,7 +19,7 @@ func NewHTTPHandler(r *httprouter.Router, qu query.Usecase) {
 }
 
 func (h *HTTPHandler) GetQueries(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	res, err := h.queryUcase.GetAll(r.Context())
+	res, err := h.queryUcase.GetActive(r.Context())
 	if err != nil {
 		httpjson.InternalErrorCustom(w, query.UnknownError, nil)
 		return

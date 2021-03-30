@@ -32,6 +32,10 @@ type Config struct {
 		} `json:"auth"`
 		EnablePprof bool `json:"enablePprof"`
 	} `json:"http"`
+
+	Listing struct {
+		DateTimeFormat string `json:"dateTimeFormat"`
+	} `json:"listing"`
 }
 
 func getConfigPath() (string, error) {
