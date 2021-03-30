@@ -13,6 +13,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/julienschmidt/httprouter"
+	"github.com/wascript3r/httputil/middleware"
 
 	// Logger
 	_loggerUcase "github.com/wascript3r/cryptopay/pkg/logger/usecase"
@@ -157,15 +158,18 @@ func main() {
 		httpRouter.Handler(http.MethodGet, "/debug/pprof/*item", http.DefaultServeMux)
 	}
 
-	_queryHandler.NewHTTPHandler(httpRouter, queryUcase)
-	_listingHandler.NewHTTPHandler(httpRouter, listingUcase)
-
 	authUcase := _authUcase.New(Cfg.HTTP.Auth.BearerToken)
-	authMid := _authMid.NewHTTPMiddleware(httpRouter, authUcase)
+	authMid := _authMid.NewHTTPMiddleware(authUcase)
+
+	authStack := middleware.New()
+	authStack.Use(authMid.Authenticated)
+
+	_queryHandler.NewHTTPHandler(httpRouter, queryUcase)
+	_listingHandler.NewHTTPHandler(httpRouter, authStack, listingUcase)
 
 	httpServer := &http.Server{
 		Addr:    ":" + Cfg.HTTP.Port,
-		Handler: authMid,
+		Handler: httpRouter,
 	}
 
 	// Graceful shutdown

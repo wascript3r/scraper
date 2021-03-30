@@ -7,6 +7,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/wascript3r/cryptopay/pkg/errcode"
 	httpjson "github.com/wascript3r/httputil/json"
+	"github.com/wascript3r/httputil/middleware"
 	"github.com/wascript3r/scraper/api/pkg/listing"
 )
 
@@ -14,13 +15,13 @@ type HTTPHandler struct {
 	listingUcase listing.Usecase
 }
 
-func NewHTTPHandler(r *httprouter.Router, lu listing.Usecase) {
+func NewHTTPHandler(r *httprouter.Router, auth *middleware.Stack, lu listing.Usecase) {
 	handler := &HTTPHandler{lu}
 
-	r.POST("/api/listing/register", handler.RegisterListing)
-	r.POST("/api/listing/history/add", handler.AddListingHistory)
-	r.POST("/api/listing/soldHistory/add", handler.AddListingSoldHistory)
-	r.POST("/api/listing/exists", handler.ListingExists)
+	r.POST("/api/listing/register", auth.Wrap(handler.RegisterListing))
+	r.POST("/api/listing/history/add", auth.Wrap(handler.AddListingHistory))
+	r.POST("/api/listing/soldHistory/add", auth.Wrap(handler.AddListingSoldHistory))
+	r.POST("/api/listing/exists", auth.Wrap(handler.ListingExists))
 }
 
 func serveError(w http.ResponseWriter, err error) {
