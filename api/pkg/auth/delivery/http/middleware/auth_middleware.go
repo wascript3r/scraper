@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/julienschmidt/httprouter"
 	httpjson "github.com/wascript3r/httputil/json"
 	"github.com/wascript3r/scraper/api/pkg/auth"
 )
@@ -15,27 +16,28 @@ var (
 )
 
 type HTTPMiddleware struct {
-	hnd       http.Handler
 	authUcase auth.Usecase
 }
 
-func NewHTTPMiddleware(hnd http.Handler, au auth.Usecase) *HTTPMiddleware {
-	return &HTTPMiddleware{hnd, au}
+func NewHTTPMiddleware(au auth.Usecase) *HTTPMiddleware {
+	return &HTTPMiddleware{au}
 }
 
-func (h *HTTPMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	token, err := h.ExtractToken(r)
-	if err != nil {
-		httpjson.Forbidden(w, nil)
-		return
-	}
+func (h *HTTPMiddleware) Authenticated(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		token, err := h.ExtractToken(r)
+		if err != nil {
+			httpjson.Forbidden(w, nil)
+			return
+		}
 
-	if !h.authUcase.ValidateToken(token) {
-		httpjson.Forbidden(w, nil)
-		return
-	}
+		if !h.authUcase.ValidateToken(token) {
+			httpjson.Forbidden(w, nil)
+			return
+		}
 
-	h.hnd.ServeHTTP(w, r)
+		next(w, r, p)
+	}
 }
 
 func (h *HTTPMiddleware) ExtractToken(r *http.Request) (string, error) {
