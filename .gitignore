@@ -24,6 +24,8 @@
 config*.json
 !config*.example.json
 
+api/cmd/app/app
+
 vendor/github.com/wascript3r/*
 
 *.tar.gz

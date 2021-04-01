@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd api/cmd/app
+env GOOS=linux GOARCH=amd64 go build
+cd ../..
+scp cmd/app/app .config/config.json root@91.225.104.238:/var/golang/api
+rm cmd/app/app
