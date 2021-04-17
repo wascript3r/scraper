@@ -17,4 +17,6 @@ type Repository interface {
 	GetTx(ctx context.Context, tx repository.Transaction, id int) (*domain.Query, error)
 
 	GetActive(ctx context.Context) ([]*domain.Query, error)
+	GetHistoryStats(ctx context.Context, id int) ([]*domain.QueryHistoryStats, error)
+	GetSoldHistoryStats(ctx context.Context, id int) ([]*domain.QuerySoldHistoryStats, error)
 }
