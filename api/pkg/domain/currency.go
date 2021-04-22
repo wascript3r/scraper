@@ -11,6 +11,24 @@ const (
 	AUCurrency
 )
 
+func (c Currency) String() string {
+	switch c {
+	case USDCurrency:
+		return "USD"
+
+	case EURCurrency:
+		return "EUR"
+
+	case GBPCurrency:
+		return "GBP"
+
+	case AUCurrency:
+		return "AU"
+	}
+
+	return ""
+}
+
 var ErrInvalidCurrency = errors.New("invalid currency")
 
 func IsValidCurrency(c Currency) bool {

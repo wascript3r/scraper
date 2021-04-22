@@ -22,6 +22,7 @@ import (
 	_queryHandler "github.com/wascript3r/scraper/api/pkg/query/delivery/http"
 	_queryRepo "github.com/wascript3r/scraper/api/pkg/query/repository"
 	_queryUcase "github.com/wascript3r/scraper/api/pkg/query/usecase"
+	_queryValidator "github.com/wascript3r/scraper/api/pkg/query/validator"
 
 	// Location
 	_locationRepo "github.com/wascript3r/scraper/api/pkg/location/repository"
@@ -109,9 +110,12 @@ func main() {
 
 	// Query
 	queryRepo := _queryRepo.NewMySQLRepo(dbConn)
+	queryValidator := _queryValidator.New()
 	queryUcase := _queryUcase.New(
 		queryRepo,
 		Cfg.Database.MySQL.QueryTimeout.Duration,
+
+		queryValidator,
 	)
 
 	// Location
