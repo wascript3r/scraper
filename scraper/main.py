@@ -20,14 +20,16 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 main_logger = logging.getLogger(__name__)    # sets main logger
 main_logger.setLevel(logging.INFO)    # sets main logger
 # info logger
-info_logging = RotatingFileHandler(info_file, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT)
+# info_logging = RotatingFileHandler(info_file, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT)
+info_logging = RotatingFileHandler(info_file, maxBytes=MAX_BYTES)
 info_logging.setLevel(logging.INFO)
 info_logging.setFormatter(formatter)
 info_logging.addFilter(LogFilter(logging.INFO))
 main_logger.addHandler(info_logging)
 
 # warning logger
-exception_logging = RotatingFileHandler(exception_file, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT)
+# exception_logging = RotatingFileHandler(exception_file, maxBytes=MAX_BYTES, backupCount=BACKUP_COUNT)
+exception_logging = RotatingFileHandler(exception_file, maxBytes=MAX_BYTES)
 exception_logging.setLevel(logging.ERROR)
 exception_logging.setFormatter(formatter)
 exception_logging.addFilter(LogFilter(logging.ERROR))
@@ -243,9 +245,15 @@ class ShopItem():
 
     async def export_json(self):
         try:
-            jf.main_info(self.item_id, self.search_query_id, self.text, self.curreny, self.condition, self.seller_id, self.photo_links, self.country, self.region, self.shipping_to)
+            registered = jf.main_info(self.item_id, self.search_query_id, self.text, self.curreny, self.condition, self.seller_id, self.photo_links, self.country, self.region, self.shipping_to)
+            jf.listing_history(self.item_id, self.price, self.remaining)
+            if self.secondary_info_user[0] == "CAPTCHA" or not self.secondary_info_user:
+                print(f"Hehe, cant upload {self.secondary_info_user}")
+            else:
+                jf.sold_history(self.item_id, self.secondary_info_user, self.secondary_info_other)
         except Exception as er:
-            main_logger.exception("Couldn't send json to server")
+            print(f"Couldn't send json to server, er: {er}")
+            main_logger.exception(f"Couldn't send json to server, er: {er}")
             return "export_json_json"
         # print(f"Writing to file: {self.text}")
         # with open("register_listing.json", "a", encoding="utf8") as writer:
@@ -294,6 +302,8 @@ def main_tasker(url, search_id):
     return 1
 
 def main():
+    with open("test.txt", "w") as w:
+        w.write("") 
     main_logger.info("Starting program")
     print("starting")
     ef.empty_file("register_listing.json")     # empty file in which to save JSON
