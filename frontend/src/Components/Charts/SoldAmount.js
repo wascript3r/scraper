@@ -15,13 +15,13 @@ export default function Soldamount(props){
       }, [props.data.soldHistory])
 
 const data = {
-  labels: historyData?.map(item => (
+  labels: historyData?.slice(0).reverse().map(item => (
       item.date
   )),
   datasets: [
     {
       label: 'Bendras parduotas prekių kiekis',
-      data:  historyData?.map(item => (
+      data:  historyData?.slice(0).reverse().map(item => (
         item.totalQuantity
     )),
       fill: false,
