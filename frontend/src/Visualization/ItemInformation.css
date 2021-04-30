@@ -1,0 +1,12 @@
+.left-item-information{
+    padding-right: 50px;
+    padding-left: 20px;
+}
+a{
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+a:hover{
+    color: cadetblue;
+}
