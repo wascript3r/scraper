@@ -6,7 +6,6 @@ import '../../Visualization/PriceDifference.css';
 export default function PriceDifference(props){
 
     const [historyData, setData] = useState([])
-
     useEffect(() => {
      
        const takeData = () =>{
@@ -15,15 +14,14 @@ export default function PriceDifference(props){
          takeData();
       }, [props.data.history])
 
-
 const data = {
-  labels: historyData?.map(item => (
+  labels: historyData?.slice(0).reverse().map(item => (
       item.date
   )),
   datasets: [
     {
       label: 'Kainų pokytis',
-      data:  historyData?.map(item => (
+      data:  historyData?.slice(0).reverse().map(item => (
         item.avgPrice
     )),
       fill: false,
@@ -56,7 +54,7 @@ const options = {
 };
     return(
         <div className='price-chart'>
-            <Line data={data} options={options} />
+          <Line data={data} options={options} />
         </div>
     )
 }

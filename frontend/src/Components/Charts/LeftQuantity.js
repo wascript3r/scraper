@@ -15,13 +15,13 @@ export default function LeftQuantity(props){
 
 
 const data = {
-  labels: historyData?.map(item => (
+  labels: historyData?.slice(0).reverse().map(item => (
       item.date
   )),
   datasets: [
     {
       label: 'Prekių likutis',
-      data:  historyData?.map(item => (
+      data:  historyData?.slice(0).reverse().map(item => (
         item.remainingQuantity
     )),
       fill: false,

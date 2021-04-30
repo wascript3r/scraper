@@ -15,13 +15,13 @@ export default function AverageSellPrice(props){
       }, [props.data.soldHistory])
 
 const data = {
-  labels: historyData?.map(item => (
+  labels: historyData?.slice(0).reverse().map(item => (
       item.date
   )),
   datasets: [
     {
       label: 'Vidutinė pardavimo kaina',
-      data:  historyData?.map(item => (
+      data:  historyData?.slice(0).reverse().map(item => (
         item.avgPrice
     )),
       fill: false,
