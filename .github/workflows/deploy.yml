@@ -8,7 +8,5 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Execute echo on server
-      run: echo 'sshpass -p ${{ secrets.PASSWORD }} ssh -tt ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"'
     - name: Execute deploy script on server
-      run: sshpass -p ${{ secrets.PASSWORD }} ssh -tt ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"
+      run: sshpass -v -p ${{ secrets.PASSWORD }} ssh -tt ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"
