@@ -9,10 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Execute deploy script on server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: cd /root; nohup ./gitHubCloning
+      run: sshpass -p "${{ secrets.PASSWORD }}" ssh -t ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"
