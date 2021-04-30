@@ -7,6 +7,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/wascript3r/cryptopay/pkg/errcode"
 	httpjson "github.com/wascript3r/httputil/json"
+	"github.com/wascript3r/httputil/middleware"
 	"github.com/wascript3r/scraper/api/pkg/query"
 )
 
@@ -14,11 +15,12 @@ type HTTPHandler struct {
 	queryUcase query.Usecase
 }
 
-func NewHTTPHandler(r *httprouter.Router, qu query.Usecase) {
+func NewHTTPHandler(r *httprouter.Router, cors *middleware.Stack, qu query.Usecase) {
 	handler := &HTTPHandler{qu}
 
-	r.GET("/api/queries/get", handler.GetQueries)
-	r.POST("/api/query/stats", handler.GetStats)
+	r.GET("/api/queries/get", cors.Wrap(handler.GetQueries))
+	r.OPTIONS("/api/query/stats", cors.Wrap(handler.GetStats))
+	r.POST("/api/query/stats", cors.Wrap(handler.GetStats))
 }
 
 func serveError(w http.ResponseWriter, err error) {
