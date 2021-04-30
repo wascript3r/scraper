@@ -46,6 +46,9 @@ import (
 	// Auth
 	_authMid "github.com/wascript3r/scraper/api/pkg/auth/delivery/http/middleware"
 	_authUcase "github.com/wascript3r/scraper/api/pkg/auth/usecase"
+
+	// Cors
+	_corsMid "github.com/wascript3r/scraper/api/pkg/cors/delivery/http/middleware"
 )
 
 const (
@@ -162,13 +165,20 @@ func main() {
 		httpRouter.Handler(http.MethodGet, "/debug/pprof/*item", http.DefaultServeMux)
 	}
 
+	// Auth
 	authUcase := _authUcase.New(Cfg.HTTP.Auth.BearerToken)
 	authMid := _authMid.NewHTTPMiddleware(authUcase)
 
 	authStack := middleware.New()
 	authStack.Use(authMid.Authenticated)
 
-	_queryHandler.NewHTTPHandler(httpRouter, queryUcase)
+	// Cors
+	corsMid := _corsMid.NewHTTPMiddleware()
+
+	corsStack := middleware.New()
+	corsStack.Use(corsMid.EnableCors)
+
+	_queryHandler.NewHTTPHandler(httpRouter, corsStack, queryUcase)
 	_listingHandler.NewHTTPHandler(httpRouter, authStack, listingUcase)
 
 	httpServer := &http.Server{
