@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd api/cmd/app || exit
+
+echo "Bulding GO API..."
+go build
+
+mv app /var/golang/api/app-temp
+cd /var/golang/api || exit
+
+echo "Stopping current API process..."
+./stop &> /dev/null
+mv app-temp app
+
+echo "Starting new API process..."
+nohup ./run
