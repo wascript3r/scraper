@@ -2,11 +2,11 @@ name: Deploy
 
 on:
   push:
-    branches: [ api ]
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - name: Execute deploy script on server
-      run: sshpass -p "${{ secrets.PASSWORD }}"" ssh -oStrictHostKeyChecking=no -tt ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"
+      run: sshpass -p "${{ secrets.PASSWORD }}" ssh -oStrictHostKeyChecking=no -tt ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd /root; ./gitHubCloning"
