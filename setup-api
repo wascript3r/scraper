@@ -3,7 +3,7 @@
 cd api/cmd/app || exit
 
 echo "Bulding GO API..."
-go build
+/usr/local/go/bin/go build
 
 mv app /var/golang/api/app-temp
 cd /var/golang/api || exit
