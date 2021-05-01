@@ -25,13 +25,27 @@ const data = {
         item.totalQuantity
     )),
       fill: false,
-      backgroundColor: 'rgb(255, 99, 132)',
-      borderColor: 'rgba(255, 99, 132, 0.2)',
+      backgroundColor: 'rgb(173, 83, 0)',
+      borderColor: 'rgb(221, 137, 35)',
+      pointBorderWidth: 5,
+      pointBorderColor: 'rgb(173, 83, 0)',
+      pointRadius: 3,
     },
   ],
 };
 const options = {
-    maintainAspectRatio: false, 
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels:{
+          color: 'black',
+          font:{
+            size: 15,
+            weight: "600",
+          }
+        }
+      }
+    },  
     scales: {
       y:{
           ticks: {
