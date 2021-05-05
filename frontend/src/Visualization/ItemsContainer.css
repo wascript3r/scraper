@@ -1,7 +1,52 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Arvo:ital@1&display=swap');
 .items-container{
-    display: flex;
-    height: 1080px;
+    display: block;
+    height: 200vh;
     width: 20%;
-    background-color: bisque;
-    border: 1px solid black;
+    background-color: #2A3F54;
+    border-right: 1px solid black;
+}
+.objects{
+    width: 100%;
+    list-style: none;
+    padding-top: 10px;
+}
+li{
+    padding-top: 8px;
+    padding-left: 10px;
+}
+li div{
+    font-family: 'Arvo', serif;
+    font-size: 30px;
+    color: white;
+    letter-spacing: 2px;
+    padding-left: 3px;
+} */
+
+.button {
+    margin-top: 1rem;
+}
+
+.bg-light {
+    background-color: white!important;
+}
+
+/* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+    .sidebar-nav .navbar .navbar-collapse {
+        padding: 0;
+        max-height: none;
+    }
+    .sidebar-nav .navbar ul {
+        float: none;
+        display: block;
+    }
+    .sidebar-nav .navbar li {
+        float: none;
+        display: block;
+    }
+    .sidebar-nav .navbar li a {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
 }
