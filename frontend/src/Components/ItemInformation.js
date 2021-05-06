@@ -31,8 +31,8 @@ export default function ItemInformation(props){
 
     return(
         <>
-        <div className='table-information'>
-            <table>
+        <div className='table-information table-responsive'>
+            <table className="table table-striped table-hover table-bordered">
                 <tbody>
                     <tr>
                         <th>Item Name:</th>
@@ -79,10 +79,26 @@ export default function ItemInformation(props){
                 </tbody>
             </table>
         </div>
-        <PriceDifference data={ebayItemName} />
-        <LeftQuantity  data={ebayItemName} />
-        <AverageSellPrice  data={ebayItemName} />
-        <SoldAmount data={ebayItemName} />
+        <div className="row">
+            <div className="col-md-12">
+                <PriceDifference data={ebayItemName} />
+            </div>
+        </div>
+        <div className="row">
+            <div className="col-md-12">
+            <LeftQuantity  data={ebayItemName} />
+            </div>
+        </div>
+        <div className="row">
+            <div className="col-md-12">
+            <AverageSellPrice  data={ebayItemName} />
+            </div>
+        </div>
+        <div className="row">
+            <div className="col-md-12">
+            <SoldAmount data={ebayItemName} />
+            </div>
+        </div>
         </>
     )
 }
