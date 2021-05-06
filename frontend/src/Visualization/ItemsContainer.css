@@ -1,24 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Arvo:ital@1&display=swap');
-.items-container{
-    display: block;
-    height: 200vh;
-    width: 20%;
-    background-color: #2A3F54;
-    border-right: 1px solid black;
+.button {
+    margin-top: 1rem;
+    margin-left: 5px;
 }
-.objects{
-    width: 100%;
-    list-style: none;
-    padding-top: 10px;
+
+a:hover {
+    color: black!important;
 }
-li{
-    padding-top: 8px;
-    padding-left: 10px;
+
+.bg-light {
+    background-color: white!important;
 }
-li div{
-    font-family: 'Arvo', serif;
-    font-size: 30px;
-    color: white;
-    letter-spacing: 2px;
-    padding-left: 3px;
+
+/* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+    .sidebar-nav .navbar .navbar-collapse {
+        padding: 0;
+        max-height: none;
+    }
+    .sidebar-nav .navbar ul {
+        float: none;
+        display: block;
+    }
+    .sidebar-nav .navbar li {
+        float: none;
+        display: block;
+    }
+    .sidebar-nav .navbar li a {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
 }
