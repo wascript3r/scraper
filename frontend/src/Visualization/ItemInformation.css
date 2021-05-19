@@ -2,6 +2,9 @@
     padding-right: 50px;
     padding-left: 20px;
 }
+.table-information{
+    padding-top: 15px;
+}
 a{
     text-decoration: none;
     color: black;
