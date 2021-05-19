@@ -69,7 +69,7 @@ export default function ItemInformation(props){
                     <tr>
                         <th>Tracking Item From:</th>
                         <td>
-                            <div>{historyItems[0]}</div>
+                            <div>{historyItems[historyItems.length - 1]}</div>
                         </td>
                         <th>Current Sold Quantity:</th>
                         <td>
