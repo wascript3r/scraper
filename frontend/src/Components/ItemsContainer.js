@@ -29,7 +29,7 @@ export default function ItemsContainer({ID, setID}) {
                     <ul className="navbar-nav mr-auto">
                         {ebayItems.map(item => (
                             <li key={item.name} onClick={() => setID(item.id)} className="nav-item btn btn-outline-light button">
-                                <a className="nav-link text-white">{item.name}</a>
+                                <a href className="nav-link text-white">{item.name}</a>
                                 {/* <hr /> */}
                             </li>
                         ))}
